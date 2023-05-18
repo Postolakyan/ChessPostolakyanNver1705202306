@@ -91,5 +91,8 @@ namespace ClassLibrary
             board[secondindex - 1, firstindex - 1] = figure;
             return board;
         }
+
+
+
     }
 }

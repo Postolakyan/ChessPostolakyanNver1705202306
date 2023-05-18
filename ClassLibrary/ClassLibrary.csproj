@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Bishop.cs" />
     <Compile Include="Board.cs" />
+    <Compile Include="Coordinations.cs" />
     <Compile Include="Figures.cs" />
     <Compile Include="King.cs" />
     <Compile Include="Knight.cs" />

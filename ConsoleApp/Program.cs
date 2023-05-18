@@ -9,6 +9,10 @@ namespace ConsoleApp
 {
     internal class Program
     {
+        static void Main(string[] args)
+        {
+            RunTheProgramm();
+        }
 
         public static void RunTheProgramm()
         {
@@ -63,32 +67,47 @@ namespace ConsoleApp
             Console.Write("------------------------------");
             Board.CreateBoard(); // Initialize the chessboard and print it
             var input = InputCoordinations(latterslist, numberslist, out int firstindex, out int secondindex);
+            Coordinations coordinations = new Coordinations();
+            coordinations.initial_first_coordination = firstindex;
+            coordinations.intiial_second_coordination = secondindex;
             char.ToUpper(input);
             switch (input)
             {
                 case 'K':
-                    King.Steps(firstindex - 1, secondindex - 1, Board.CreateBoard());
+                    King.Steps(coordinations.initial_first_coordination - 1, coordinations.intiial_second_coordination - 1, Board.CreateBoard());
                     break;
                 case 'Q':
-                    Queen.Steps(firstindex-1,secondindex-1,Board.CreateBoard());
+                    Queen.Steps(coordinations.initial_first_coordination - 1, coordinations.intiial_second_coordination - 1, Board.CreateBoard());
                     break;
                 case 'R':
-                    Rook.Steps(firstindex - 1, secondindex - 1, Board.CreateBoard());
+                    Rook.Steps(coordinations.initial_first_coordination - 1, coordinations.intiial_second_coordination - 1, Board.CreateBoard());
                     break;
                 case 'B':
-                    Bishop.Steps(firstindex - 1, secondindex - 1, Board.CreateBoard());
+                    Bishop.Steps(coordinations.initial_first_coordination - 1, coordinations.intiial_second_coordination - 1, Board.CreateBoard());
                     break;
                 case 'N':
-                    Knight.Steps(firstindex - 1, secondindex - 1, Board.CreateBoard());
+                    Knight.Steps(coordinations.initial_first_coordination - 1, coordinations.intiial_second_coordination - 1, Board.CreateBoard());
                     break;
                 case 'P':
-                    Pawn.Steps(firstindex - 1, secondindex - 1, Board.CreateBoard());
+                    Pawn.Steps(coordinations.initial_first_coordination - 1, coordinations.intiial_second_coordination - 1, Board.CreateBoard());
                     break;
             }
-           
-               // var board = Board.ReplaceFigure(Board.CreateBoard(), firstindex, secondindex, input); // Update the chessboard with the selected figure
-                //PrintBoard(board);
+
+            Console.CursorTop = 20;
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Do you want to Move the figure Y/N ? ");
+            Console.ForegroundColor = ConsoleColor.White;
+            string res = Console.ReadLine();
+            if (res.Equals("N", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.Clear();
+            }
+            else
+            {
+                MoveFigure(latterslist, numberslist, input, firstindex, secondindex);
+            }
         }
+
         public static void DrawEdges(int top, int left)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -97,6 +116,164 @@ namespace ConsoleApp
             {
                 Console.CursorLeft = left;
                 Console.WriteLine("|");
+            }
+        }
+
+
+        public static void MoveFigure(List<char> letters, List<char> numbers, char figure, int firstindex, int secondindex)
+        {
+
+
+
+            bool exit = false;
+
+            while (!exit)
+            {
+                Console.CursorTop = 21;
+                int initial_first_index = 0;
+                int initial_second_index = 0;
+                char initial_first = '0';
+                char initial_second = '0';
+
+                Console.WriteLine("Please Insert The Initial Coordinations");
+                string initial = Console.ReadLine();
+
+                // Check if the user wants to exit
+                if (initial.ToLower() == "exit")
+                {
+                    exit = true;
+                    break;
+                }
+            initial_first = initial[0];
+            initial_second = initial[1];
+            Console.WriteLine("Please Insert The Destination Coordinations");
+            string destination = Console.ReadLine();
+
+            char dest_first = destination[0];
+            char dest_second = destination[1];
+            int dest_first_index = 0;
+            int dest_second_index = 0;
+            bool valid = CheckIfValid(letters, numbers, ref initial_first, ref initial_second);
+            bool isvalid = CheckIfValid(letters, numbers, ref dest_first, ref dest_second);
+
+            for (int i = 0; i < letters.Count; i++)
+            {
+                if (initial_first == letters[i])
+                {
+                    initial_first_index = i + 1;
+                }
+                if (dest_first == letters[i])
+                {
+                    dest_first_index = i + 1;
+                }
+            }
+            for (int j = 1; j < numbers.Count; j++)
+            {
+                if (initial_second == numbers[j])
+                {
+                    initial_second_index = j + 1;
+                }
+                if (dest_second == numbers[j])
+                {
+                    dest_second_index = j + 1;
+                }
+            }
+                if (valid && isvalid)
+                {
+                    switch (figure)
+                    {
+                        case 'K':
+                            bool validStep_K = King.MoveTo(initial_first_index - 1, initial_second_index - 1, dest_first_index - 1, dest_second_index - 1);
+                            if (validStep_K)
+                            {
+                                King.Steps(dest_first_index - 1, dest_second_index - 1, Board.CreateBoard());
+                            }
+                            else
+                            {
+                                Console.CursorTop += 15;
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("The Destination Coodrinations is not Valid Please Insert Valid Coordinations ");
+                                Console.ReadLine();
+                                MoveFigure(letters, numbers, figure, firstindex, secondindex);
+                            }
+                            break;
+                        case 'Q':
+                            bool validStep_Q = Queen.MoveTo(initial_first_index - 1, initial_second_index - 1, dest_first_index - 1, dest_second_index - 1);
+                            if (validStep_Q)
+                            {
+                                Queen.Steps(dest_first_index - 1, dest_second_index - 1, Board.CreateBoard());
+                            }
+                            else
+                            {
+                                Console.CursorTop += 15;
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("The Destination Coodrinations is not Valid Please Insert Valid Coordinations ");
+                                Console.ReadLine();
+                                MoveFigure(letters, numbers, figure, firstindex, secondindex);
+                            }
+                            break;
+                        case 'R':
+                            bool validStep_R = Rook.MoveTo(initial_first_index - 1, initial_second_index - 1, dest_first_index - 1, dest_second_index - 1);
+                            if (validStep_R)
+                            {
+                                Rook.Steps(dest_first_index - 1, dest_second_index - 1, Board.CreateBoard());
+                            }
+                            else
+                            {
+                                Console.CursorTop += 15;
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("The Destination Coodrinations is not Valid Please Insert Valid Coordinations ");
+                                Console.ReadLine();
+                                MoveFigure(letters, numbers, figure, firstindex, secondindex);
+                            }
+                            break;
+                        case 'B':
+                            bool validStep_B = Bishop.MoveTo(initial_first_index - 1, initial_second_index - 1, dest_first_index - 1, dest_second_index - 1);
+                            if (validStep_B)
+                            {
+                                Bishop.Steps(dest_first_index - 1, dest_second_index - 1, Board.CreateBoard());
+                            }
+                            else
+                            {
+                                Console.CursorTop += 15;
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("The Destination Coodrinations is not Valid Please Insert Valid Coordinations ");
+                                Console.ReadLine();
+                                MoveFigure(letters, numbers, figure, firstindex, secondindex);
+                            }
+                            break;
+                        case 'N':
+                            bool validStep_N = Knight.MoveTo(initial_first_index - 1, initial_second_index - 1, dest_first_index - 1, dest_second_index - 1);
+                            if (validStep_N)
+                            {
+                                Knight.Steps(dest_first_index - 1, dest_second_index - 1, Board.CreateBoard());
+                            }
+                            else
+                            {
+                                Console.CursorTop += 15;
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("The Destination Coodrinations is not Valid Please Insert Valid Coordinations ");
+                                Console.ReadLine();
+                                MoveFigure(letters, numbers, figure, firstindex, secondindex);
+                            }
+                            break;
+                        case 'P':
+                            bool validStep_P = Pawn.MoveTo(initial_first_index - 1, initial_second_index - 1, dest_first_index - 1, dest_second_index - 1);
+                            if (validStep_P)
+                            {
+                                Pawn.Steps(dest_first_index - 1, dest_second_index - 1, Board.CreateBoard());
+                            }
+                            else
+                            {
+                                Console.CursorTop += 15;
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("The Destination Coodrinations is not Valid Please Insert Valid Coordinations ");
+                                Console.ReadLine();
+                                MoveFigure(letters, numbers, figure, firstindex, secondindex);
+                            }
+                            break;
+                    }
+                }
             }
         }
 
@@ -163,9 +340,9 @@ namespace ConsoleApp
                 {'B',"Bishop" },
                 {'P',"Pawn" }
             };
-            foreach(var item in  Enum.GetValues(typeof(Figures)))
+            foreach (var item in Enum.GetValues(typeof(Figures)))
             {
-               // Console.WriteLine(item);
+                // Console.WriteLine(item);
             }
             foreach (KeyValuePair<char, string> c in figures)
             {
@@ -301,9 +478,6 @@ namespace ConsoleApp
             }
             return isvalid;
         }
-        static void Main(string[] args)
-        {
-            RunTheProgramm();
-        }
+
     }
 }
